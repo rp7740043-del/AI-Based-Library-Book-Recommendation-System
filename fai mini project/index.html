@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI-Based Library Book Recommendation System with Book Allotment History Analysis - Foundations of AI Mini Project" />
+  <title>Apex University Central Library | AI Book Recommendation & Allotment Portal</title>
+  
+  <!-- Google Fonts: Inter & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Portal Stylesheet -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Top Campus Notice & Global Utility Bar -->
+  <div class="top-notice-bar">
+    <div class="container top-notice-content">
+      <div class="notice-left">
+        <span class="live-dot"></span>
+        <span class="portal-badge">APEX DIGITAL PORTAL</span>
+        <span class="library-timing">📚 Central Library • Open 8:00 AM – 10:00 PM</span>
+        <span class="library-clock" id="livePortalClock">Loading local time...</span>
+      </div>
+      <div class="notice-right">
+        <button class="top-util-btn" onclick="openAddBookModal()" title="Add a custom book to the library catalog">
+          <span>➕</span> Add Book
+        </button>
+        <button class="top-util-btn" onclick="resetDemoData()" title="Reset all allotments & interests to demo state">
+          <span>🔄</span> Reset Demo Data
+        </button>
+        <button class="top-util-btn theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+          <span id="themeToggleIcon">🌙</span> <span id="themeToggleText">Dark Mode</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Main Navbar -->
+  <header class="navbar-sticky" id="mainNavbar">
+    <div class="container nav-container">
+      <div class="brand-wrapper">
+        <a href="#home" class="brand-link">
+          <div class="brand-logo-icon">📖</div>
+          <div class="brand-text-block">
+            <h1 class="brand-title">Apex University Library</h1>
+            <p class="brand-subtitle">AI Recommendation & Allotment System</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav>
+        <ul class="nav-links" id="navLinksMenu">
+          <li><a href="#home" class="nav-link active">Home</a></li>
+          <li><a href="#student-dashboard" class="nav-link">Student Workspace</a></li>
+          <li><a href="#recommendations" class="nav-link">Recommendations</a></li>
+          <li><a href="#browse" class="nav-link">Catalog</a></li>
+          <li><a href="#history" class="nav-link">Allotment History</a></li>
+          <li><a href="#ai-lab" class="nav-link">AI Lab & XAI</a></li>
+          <li><a href="#about" class="nav-link">About Project</a></li>
+        </ul>
+      </nav>
+
+      <!-- Fast Header Student Switcher & User Pill -->
+      <div class="nav-actions">
+        <div class="nav-student-dropdown-wrap">
+          <label for="navStudentSelect" class="sr-only">Quick Student Select</label>
+          <div class="nav-student-badge">
+            <img src="" alt="Student Avatar" class="chip-avatar" id="chipAvatar" />
+            <select id="navStudentSelect" class="nav-student-select" title="Switch active demo student">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+        </div>
+        <button class="mobile-menu-btn" id="mobileMenuToggle" aria-label="Toggle navigation menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Application Body -->
+  <main>
+
+    <!-- SECTION 1: HERO -->
+    <section class="hero-section" id="home">
+      <div class="container hero-container">
+        <div class="hero-content">
+          <div class="hero-pill-badge">
+            <span class="pill-glow">✨</span>
+            <span class="pill-label">Foundations of Artificial Intelligence Mini Project</span>
+            <span class="pill-separator">•</span>
+            <span class="pill-model">Vector Space Model & Cosine Similarity</span>
+          </div>
+
+          <h2 class="hero-title">
+            Intelligent University Library <br />
+            <span class="gradient-text">Book Recommendation Portal</span>
+          </h2>
+
+          <p class="hero-tagline">
+            Bridging student academic histories and semester coursework to recommended literature using Content-Based Vector Space Models, Allotment Frequency Traversal, and Transparent Explainable AI.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="#recommendations" class="btn btn-accent btn-lg shadow-lift">
+              <span>🎯</span> View AI Recommendations
+            </a>
+            <a href="#student-dashboard" class="btn btn-primary btn-lg shadow-lift">
+              <span>👤</span> My Student Workspace
+            </a>
+            <a href="#browse" class="btn btn-outline-hero btn-lg">
+              <span>📚</span> Browse 30+ Catalog
+            </a>
+            <a href="#ai-lab" class="btn btn-outline-hero btn-lg">
+              <span>🧪</span> Launch AI Math Lab
+            </a>
+          </div>
+
+          <!-- Hero Metrics Bar -->
+          <div class="hero-stats-strip">
+            <div class="hero-stat-item">
+              <span class="stat-glyph">📚</span>
+              <div>
+                <h4 id="heroBookCount">30+</h4>
+                <p>Curated Textbooks</p>
+              </div>
+            </div>
+            <div class="hero-stat-item">
+              <span class="stat-glyph">👥</span>
+              <div>
+                <h4>5 Profiles</h4>
+                <p>Engineered Students</p>
+              </div>
+            </div>
+            <div class="hero-stat-item">
+              <span class="stat-glyph">📐</span>
+              <div>
+                <h4>Cosine Sim</h4>
+                <p>Vector Space Ranking</p>
+              </div>
+            </div>
+            <div class="hero-stat-item">
+              <span class="stat-glyph">⚡</span>
+              <div>
+                <h4>14 Days</h4>
+                <p>Standard Allotment</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: STUDENT WORKSPACE & PROFILE DASHBOARD (Placed in the RIGHT place right after Hero!) -->
+    <section class="section section-student-workspace" id="student-dashboard">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="badge badge-primary">Student Management</span>
+            <h2 class="section-title">Active Student Workspace & Profile</h2>
+            <p class="section-subtitle">
+              Switch students or customize subject interests. The AI recommendation engine immediately recalculates the vector space model upon any change.
+            </p>
+          </div>
+          <div class="student-select-card-quick">
+            <label for="studentSelect" style="font-size: 0.85rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:0.35rem;">
+              Choose Active Demo Profile:
+            </label>
+            <select id="studentSelect" class="student-select-primary">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+        </div>
+
+        <!-- Student Profile Cards Quick Switcher -->
+        <div class="student-quick-cards-grid" id="studentQuickCardsGrid">
+          <!-- Populated by JavaScript with visual student cards -->
+        </div>
+
+        <!-- Student Dashboard Details Card -->
+        <div class="student-workspace-card">
+          <div class="workspace-grid">
+            
+            <!-- Left: Profile Info & Quota Gauge -->
+            <div class="workspace-profile-col">
+              <div id="studentProfileSummary" class="student-profile-summary">
+                <!-- Rendered dynamically by app.js -->
+              </div>
+
+              <!-- Quota & Allotment Allowance Bar -->
+              <div class="quota-container">
+                <div class="quota-header">
+                  <span class="quota-title">Semester Allotment Quota</span>
+                  <span class="quota-count" id="quotaCountText">2 / 6 Books</span>
+                </div>
+                <div class="quota-track">
+                  <div class="quota-fill" id="quotaProgressBar" style="width: 33%;"></div>
+                </div>
+                <div class="quota-caption" id="quotaCaption">
+                  4 book allotments remaining this semester before quota limit.
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Interactive Interests Matrix -->
+            <div class="workspace-interests-col">
+              <div class="interests-box-header">
+                <div>
+                  <h3 class="interests-box-title">Academic Domain Interests & Focus Areas</h3>
+                  <p class="interests-box-subtitle">
+                    Select topics to add directly to your vector profile. Checked domains receive high baseline salience (weight = 3.0) + semantic domain graph expansion.
+                  </p>
+                </div>
+                <div class="interests-quick-actions">
+                  <button class="btn btn-outline btn-xs" onclick="selectAllInterests()">Select All</button>
+                  <button class="btn btn-outline btn-xs" onclick="clearAllInterests()">Clear All</button>
+                  <button class="btn btn-outline btn-xs" onclick="resetBranchInterests()">Branch Defaults</button>
+                </div>
+              </div>
+
+              <!-- Checkbox Matrix Grid -->
+              <div class="interests-chips-grid" id="interestsCheckboxes">
+                <!-- Rendered by JavaScript -->
+              </div>
+
+              <div class="interests-live-indicator">
+                <span class="pulse-indicator"></span>
+                <span>Real-Time Engine Sync: Any interest change triggers instant vector recalculation below.</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: AI PERSONALIZED RECOMMENDATIONS (Directly follows the Student Workspace!) -->
+    <section class="section section-recommendations" id="recommendations">
+      <div class="container">
+        
+        <!-- Recommendations Control Header -->
+        <div class="recs-header-card">
+          <div class="recs-header-left">
+            <div class="recs-engine-badge">
+              <span class="badge badge-accent">AI Engine Active</span>
+              <span class="engine-tag">Vector Space Model • Cosine Similarity + TF-IDF Weighting</span>
+            </div>
+            <h2 class="section-title recs-title-heading">
+              Personalized Recommendations for <span id="recsStudentName" class="gradient-text">Student</span>
+            </h2>
+            <p class="recs-subtitle">
+              Unborrowed books ranked by mathematical similarity to past borrowings, academic ratings, and active interests.
+            </p>
+          </div>
+
+          <!-- Recommendation Filters & Peer Boost Toggle -->
+          <div class="recs-header-controls">
+            <!-- Collaborative Filtering Toggle -->
+            <div class="toggle-control-box" title="Toggle Collaborative Filtering: Boost books popular with students of similar borrowing profiles">
+              <div class="toggle-text-group">
+                <span class="toggle-title">Collaborative Peer Boost</span>
+                <span class="toggle-subtitle" id="collabStatusText">Off (Pure Content-Based)</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="collabFilterToggle" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <!-- Sort Recommendation Selector -->
+            <div class="recs-filter-group">
+              <label for="recSortSelect" class="recs-filter-label">Sort By:</label>
+              <select id="recSortSelect" class="filter-select-sm" onchange="renderRecommendations()">
+                <option value="match" selected>Top AI Match Score</option>
+                <option value="rating">Academic Rating (High to Low)</option>
+                <option value="copies">Available Copies (Most)</option>
+                <option value="year">Publication Year (Newest)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommendations Grid Container -->
+        <div class="books-grid recs-grid" id="recommendationsGrid">
+          <!-- Populated by JavaScript with top 6 recommendations -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 4: BROWSE COMPLETE LIBRARY CATALOG -->
+    <section class="section section-browse" id="browse">
+      <div class="container">
+        
+        <div class="catalog-header-wrap">
+          <div class="text-center">
+            <span class="badge badge-primary">Curated Catalog</span>
+            <h2 class="section-title">Browse Library Textbooks</h2>
+            <p class="section-subtitle mx-auto">
+              Explore 30+ peer-reviewed textbooks across Computer Science, Data Science, AI, and Engineering disciplines.
+            </p>
+          </div>
+
+          <!-- Search & Filter Control Bar -->
+          <div class="catalog-controls-container">
+            <!-- Search Input -->
+            <div class="search-input-wrapper">
+              <span class="search-icon">🔍</span>
+              <input 
+                type="text" 
+                id="bookSearchInput" 
+                class="search-input" 
+                placeholder="Search by book title, author, category, ISBN, or tag (e.g. Python, SQL, Neural Networks)..." 
+              />
+              <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()" title="Clear search">✕</button>
+            </div>
+
+            <!-- Secondary Toolbar: Sort, Stock Filter, View Toggle -->
+            <div class="catalog-secondary-toolbar">
+              <div class="toolbar-item">
+                <label for="browseSortSelect" class="toolbar-label">Sort By:</label>
+                <select id="browseSortSelect" class="filter-select-sm" onchange="renderBrowseBooks()">
+                  <option value="default" selected>Recommended Catalog Order</option>
+                  <option value="rating-desc">Highest Rated (★ 5.0 → 4.0)</option>
+                  <option value="avail-desc">Most Copies Available</option>
+                  <option value="year-desc">Year of Publication (Newest)</option>
+                  <option value="title-asc">Title (A to Z)</option>
+                </select>
+              </div>
+
+              <div class="toolbar-item">
+                <label class="checkbox-inline">
+                  <input type="checkbox" id="browseStockOnly" onchange="renderBrowseBooks()" />
+                  <span>In Stock Only</span>
+                </label>
+              </div>
+
+              <div class="toolbar-item view-mode-item">
+                <span class="toolbar-label">View:</span>
+                <button class="view-mode-btn active" id="viewModeGrid" onclick="setCatalogViewMode('grid')" title="Card Grid View">⊞</button>
+                <button class="view-mode-btn" id="viewModeList" onclick="setCatalogViewMode('list')" title="Detailed List View">☰</button>
+              </div>
+
+              <button class="btn btn-outline btn-sm" onclick="clearFilters()">Reset Filters</button>
+            </div>
+          </div>
+
+          <!-- Category Filter Pills -->
+          <div class="category-filter-pills" id="categoryFilterPills">
+            <!-- Populated dynamically with book counts -->
+          </div>
+        </div>
+
+        <!-- Catalog Results Summary Bar -->
+        <div class="catalog-results-bar">
+          <span id="catalogResultsCount">Showing 30 books</span>
+          <span style="font-size:0.85rem; color:var(--text-muted);">Instant 14-day loan issued with automatic stock tracking</span>
+        </div>
+
+        <!-- Books Grid / List -->
+        <div class="books-grid" id="browseBooksGrid">
+          <!-- Populated by JavaScript -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 5: ALLOTMENT HISTORY & CATEGORY ANALYTICS -->
+    <section class="section section-history" id="history">
+      <div class="container">
+        
+        <div class="text-center">
+          <span class="badge badge-primary">Records & Visual Analytics</span>
+          <h2 class="section-title">My Allotment History & Reading Analytics</h2>
+          <p class="section-subtitle mx-auto">
+            Comprehensive ledger of active loans, return deadlines, overdue statuses, and category reading distributions.
+          </p>
+        </div>
+
+        <!-- Summary Metric Cards -->
+        <div class="history-stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">Total Books Allotted</span>
+              <div class="stat-icon stat-icon-blue">📚</div>
+            </div>
+            <div class="stat-num" id="statTotalBorrowed">0</div>
+            <div class="stat-trend">Lifetime University Library Allotments</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">Currently Issued</span>
+              <div class="stat-icon stat-icon-amber">📖</div>
+            </div>
+            <div class="stat-num" id="statCurrentlyIssued">0</div>
+            <div class="stat-trend">Active 14-day Loans in Possession</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">Returned on Time</span>
+              <div class="stat-icon stat-icon-green">✅</div>
+            </div>
+            <div class="stat-num" id="statReturned">0</div>
+            <div class="stat-trend">Completed and Restocked Books</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">Overdue Books</span>
+              <div class="stat-icon stat-icon-red">⚠️</div>
+            </div>
+            <div class="stat-num" id="statOverdue">0</div>
+            <div class="stat-trend text-danger">Requires Immediate Return or Renewal</div>
+          </div>
+        </div>
+
+        <!-- Dual Chart Analytics: Category Distribution & Status Doughnut -->
+        <div class="charts-dual-grid">
+          
+          <!-- Category Borrow Chart -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <div>
+                <h3 class="chart-card-title">Subject Borrowing Frequency</h3>
+                <p class="chart-card-subtitle">
+                  Category count derived from records (weights student vector profile)
+                </p>
+              </div>
+              <span class="badge badge-accent">Chart.js Live</span>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="categoryBorrowChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Allotment Status Ratio Doughnut Chart -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <div>
+                <h3 class="chart-card-title">Allotment Status Distribution</h3>
+                <p class="chart-card-subtitle">
+                  Ratio of Issued (Active), Returned, and Overdue books
+                </p>
+              </div>
+              <span class="badge badge-primary">Status Ratio</span>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="statusRatioChart"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Allotment History Table -->
+        <div class="table-card">
+          <div class="table-header-box">
+            <div>
+              <h3 class="table-card-title">Allotment Transaction History Log</h3>
+              <p class="table-card-subtitle">
+                Official institutional ledger. Color-coded status badges with countdown to return deadline.
+              </p>
+            </div>
+            
+            <div class="table-header-actions">
+              <!-- Filter Tabs: All, Active, Returned, Overdue -->
+              <div class="table-filter-tabs" id="historyTabGroup">
+                <button class="tab-btn active" onclick="setHistoryFilter('All')">All (<span id="tabCountAll">0</span>)</button>
+                <button class="tab-btn" onclick="setHistoryFilter('Issued')">Active (<span id="tabCountIssued">0</span>)</button>
+                <button class="tab-btn" onclick="setHistoryFilter('Returned')">Returned (<span id="tabCountReturned">0</span>)</button>
+                <button class="tab-btn" onclick="setHistoryFilter('Overdue')">Overdue (<span id="tabCountOverdue">0</span>)</button>
+              </div>
+
+              <!-- Print Receipt Button -->
+              <button class="btn btn-outline btn-sm" onclick="openReceiptModal()" title="Print official student allotment slip">
+                <span>🖨️</span> Print Slip
+              </button>
+            </div>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="library-table">
+              <thead>
+                <tr>
+                  <th>Transaction ID</th>
+                  <th>Book Title</th>
+                  <th>Category</th>
+                  <th>Issue Date</th>
+                  <th>Due Date</th>
+                  <th>Countdown / Days</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 6: AI ENGINE LAB & INTERACTIVE SIMULATOR -->
+    <section class="section section-ai-lab" id="ai-lab">
+      <div class="container">
+        <div class="text-center">
+          <span class="badge badge-accent">Foundations of AI Lab</span>
+          <h2 class="section-title">Vector Space Model Interactive Simulator</h2>
+          <p class="section-subtitle mx-auto">
+            Test any book in the library against the active student's feature vector in real-time to inspect exact term weights, cosine angle, and domain graph hops.
+          </p>
+        </div>
+
+        <div class="ai-lab-card">
+          <div class="ai-lab-controls">
+            <div class="ai-lab-select-group">
+              <label for="aiLabBookSelect" class="ai-lab-label">
+                Select Book to Simulate & Calculate Cosine Distance:
+              </label>
+              <select id="aiLabBookSelect" class="ai-lab-select" onchange="runAiLabSimulation()">
+                <!-- Populated dynamically with all books -->
+              </select>
+            </div>
+            <button class="btn btn-accent" onclick="runAiLabSimulation()">
+              <span>⚡</span> Run Vector Match Computation
+            </button>
+          </div>
+
+          <!-- Live Simulator Calculation Results Display -->
+          <div id="aiLabResults" class="ai-lab-results-container">
+            <!-- Populated dynamically with exact mathematical proof -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: COURSEWORK SPECIFICATIONS & ABOUT -->
+    <section class="section section-about" id="about">
+      <div class="container">
+        <div class="about-hero-grid">
+          <div>
+            <span class="badge badge-primary">Coursework Architecture</span>
+            <h2 class="section-title" style="margin-top:0.4rem;">Foundations of AI Mini Project</h2>
+            <p style="color:var(--text-body); font-size:1rem; margin-bottom:1.25rem; line-height:1.7;">
+              In academic institutions, students often face choice overload when selecting follow-up textbooks matching their branch curriculum and active projects.
+            </p>
+            <p style="color:var(--text-body); font-size:1rem; margin-bottom:1.25rem; line-height:1.7;">
+              This system solves this challenge through a transparent hybrid pipeline:
+              <strong>Content-Based Vector Space Models (VSM)</strong>, <strong>Allotment Frequency Implicit Feedback</strong>, <strong>Curriculum Domain Graph Traversal</strong>, and <strong>Peer Collaborative Filtering</strong>.
+            </p>
+
+            <div class="math-formula-box">
+              <div class="formula-label">[ Mathematical Foundation: Cosine Similarity of L2-Normalized Vectors ]</div>
+              <div class="formula-latex">
+                $$\cos(\theta) = \frac{\mathbf{u} \cdot \mathbf{d}}{\|\mathbf{u}\|_2 \cdot \|\mathbf{d}\|_2} = \sum_{k=1}^V \hat{u}_k \cdot \hat{d}_k$$
+              </div>
+              <p class="formula-explanation">
+                Where $\mathbf{u}$ represents the student profile vector (explicit interests + borrow frequency weights), and $\mathbf{d}$ represents the book feature vector (Category weight: 3.5, Tags: 2.5, Title: 1.0).
+              </p>
+            </div>
+          </div>
+
+          <div class="about-img-frame">
+            <img 
+              src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80" 
+              alt="University Students studying in library" 
+              loading="lazy"
+            />
+          </div>
+        </div>
+
+        <!-- 4 System Architecture Cards -->
+        <div class="spec-grid">
+          <div class="spec-card">
+            <div class="spec-icon">🧠</div>
+            <h4>1. User Profiling & Topic Traversal</h4>
+            <p>
+              Encodes active curriculum interests combined with borrow frequency. Borrowing multiple books in a discipline (e.g. Python & Data Science) triggers semantic topic propagation to advanced domains like Machine Learning & Deep Learning.
+            </p>
+          </div>
+
+          <div class="spec-card">
+            <div class="spec-icon">🛡️</div>
+            <h4>2. Strict Duplicate Prevention</h4>
+            <p>
+              The engine automatically audits the student's historical and active allotment registry. Books that have already been issued or returned are strictly excluded from recommendation candidates.
+            </p>
+          </div>
+
+          <div class="spec-card">
+            <div class="spec-icon">⭐</div>
+            <h4>3. Academic Rating Weighting</h4>
+            <p>
+              Academic rating scores (out of 5.0) are normalized and combined with the base cosine distance, guaranteeing that seminal texts like Russell & Norvig's <em>AI: A Modern Approach</em> receive fair academic priority.
+            </p>
+          </div>
+
+          <div class="spec-card">
+            <div class="spec-icon">💡</div>
+            <h4>4. Explainable AI (XAI) Reasons</h4>
+            <p>
+              Every recommendation card provides a clear, natural-language explanation tracing back to exact past borrowings or selected interests, eliminating black-box opacity.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-brand-title">
+            <span style="font-size:1.6rem;">📖</span>
+            <h3>Apex University Central Library</h3>
+          </div>
+          <p>
+            AI-Based Library Book Recommendation System with Book Allotment History Analysis.
+            Foundations of Artificial Intelligence Mini Project.
+          </p>
+          <p class="footer-stack-note">
+            Stack: Plain HTML5, Modern Vanilla CSS3, JavaScript (ES6+), Chart.js CDN, Open Library API.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="#home">Home Overview</a></li>
+            <li><a href="#student-dashboard">Student Workspace</a></li>
+            <li><a href="#recommendations">AI Recommendations</a></li>
+            <li><a href="#browse">Complete Catalog</a></li>
+            <li><a href="#history">Allotment History</a></li>
+            <li><a href="#ai-lab">AI Lab & Simulator</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Subject Categories</h4>
+          <ul class="footer-links">
+            <li><a href="#browse" onclick="setCategoryFilter('Python')">Python Programming</a></li>
+            <li><a href="#browse" onclick="setCategoryFilter('Data Science')">Data Science & Stats</a></li>
+            <li><a href="#browse" onclick="setCategoryFilter('Machine Learning')">Machine Learning</a></li>
+            <li><a href="#browse" onclick="setCategoryFilter('AI')">Artificial Intelligence</a></li>
+            <li><a href="#browse" onclick="setCategoryFilter('DBMS')">DBMS & Databases</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Demo Profiles</h4>
+          <ul class="footer-links" id="footerStudentLinks">
+            <!-- Dynamically populated -->
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          © 2026 Apex University Central Library • Foundations of AI Mini Project
+        </div>
+        <div>
+          100% Client-Side LocalStorage • Real-Time Vector Space Computation
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       MODALS & OVERLAYS
+       ========================================================================= -->
+
+  <!-- Modal 1: Book Details Modal -->
+  <div class="modal-overlay" id="bookDetailsModal" onclick="closeModalOnBackdrop(event, 'bookDetailsModal')">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalBookTitle">Book Details</h3>
+        <button class="modal-close-btn" onclick="closeModal('bookDetailsModal')">✕</button>
+      </div>
+      <div class="modal-body" id="modalBookContent">
+        <!-- Rendered dynamically -->
+      </div>
+      <div class="modal-footer" id="modalBookFooter">
+        <!-- Action buttons rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Explainable AI (XAI) Vector Inspector Modal -->
+  <div class="modal-overlay" id="xaiInspectModal" onclick="closeModalOnBackdrop(event, 'xaiInspectModal')">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <span>🔬</span> Explainable AI (XAI) Vector Space Breakdown
+        </h3>
+        <button class="modal-close-btn" onclick="closeModal('xaiInspectModal')">✕</button>
+      </div>
+      <div class="modal-body" id="modalXaiContent">
+        <!-- Rendered dynamically -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('xaiInspectModal')">Close Inspector</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Add Custom Book Modal -->
+  <div class="modal-overlay" id="addBookModal" onclick="closeModalOnBackdrop(event, 'addBookModal')">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <span>➕</span> Add New Book to Library Catalog
+        </h3>
+        <button class="modal-close-btn" onclick="closeModal('addBookModal')">✕</button>
+      </div>
+      <form id="addBookForm" onsubmit="handleAddNewBook(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="newBookTitle">Book Title *</label>
+            <input type="text" id="newBookTitle" class="form-input" required placeholder="e.g. Deep Learning with PyTorch" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="newBookAuthor">Author(s) *</label>
+              <input type="text" id="newBookAuthor" class="form-input" required placeholder="e.g. Ian Goodfellow" />
+            </div>
+            <div class="form-group">
+              <label for="newBookCategory">Category *</label>
+              <select id="newBookCategory" class="form-input" required>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="newBookYear">Publication Year</label>
+              <input type="number" id="newBookYear" class="form-input" value="2024" min="1990" max="2030" />
+            </div>
+            <div class="form-group">
+              <label for="newBookCopies">Total Copies</label>
+              <input type="number" id="newBookCopies" class="form-input" value="4" min="1" max="20" />
+            </div>
+            <div class="form-group">
+              <label for="newBookRating">Rating (1-5)</label>
+              <input type="number" id="newBookRating" class="form-input" value="4.8" min="1.0" max="5.0" step="0.1" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="newBookTags">Tags (Comma-separated keywords for Vector Model)</label>
+            <input type="text" id="newBookTags" class="form-input" placeholder="e.g. pytorch, deep learning, neural networks, cuda" />
+          </div>
+
+          <div class="form-group">
+            <label for="newBookDesc">Description / Abstract</label>
+            <textarea id="newBookDesc" class="form-input" rows="3" placeholder="Brief summary of the textbook for student discovery..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('addBookModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Book to Library</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 4: Allotment Receipt Slip Modal (Printable) -->
+  <div class="modal-overlay" id="receiptModal" onclick="closeModalOnBackdrop(event, 'receiptModal')">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title"><span>🖨️</span> Student Library Allotment Slip</h3>
+        <button class="modal-close-btn" onclick="closeModal('receiptModal')">✕</button>
+      </div>
+      <div class="modal-body" id="receiptSlipBody">
+        <!-- Rendered dynamically -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('receiptModal')">Close</button>
+        <button class="btn btn-primary" onclick="window.print()">
+          <span>🖨️</span> Print Allotment Slip
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Back to Top Button -->
+  <button class="back-to-top-btn" id="backToTopBtn" onclick="scrollToTop()" title="Back to top">↑</button>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/recommendation.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
